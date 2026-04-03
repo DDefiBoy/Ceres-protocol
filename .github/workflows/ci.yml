@@ -1,0 +1,101 @@
+name: Ceres Protocol CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
+
+jobs:
+  contracts:
+    name: Build & Test Soroban Contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: wasm32-unknown-unknown
+          override: true
+          components: rustfmt, clippy
+
+      - name: Cache Cargo
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install Soroban CLI
+        run: cargo install --locked soroban-cli
+
+      - name: Check formatting
+        run: |
+          cd contracts/pool && cargo fmt --check
+          cd ../oracle && cargo fmt --check
+          cd ../router && cargo fmt --check
+
+      - name: Clippy (pool)
+        run: cd contracts/pool && cargo clippy --target wasm32-unknown-unknown -- -D warnings
+
+      - name: Clippy (oracle)
+        run: cd contracts/oracle && cargo clippy --target wasm32-unknown-unknown -- -D warnings
+
+      - name: Clippy (router)
+        run: cd contracts/router && cargo clippy --target wasm32-unknown-unknown -- -D warnings
+
+      - name: Build contracts (WASM)
+        run: |
+          cd contracts/pool && cargo build --target wasm32-unknown-unknown --release
+          cd ../oracle && cargo build --target wasm32-unknown-unknown --release
+          cd ../router && cargo build --target wasm32-unknown-unknown --release
+
+      - name: Run contract tests
+        run: |
+          cd contracts/pool && cargo test
+          cd ../oracle && cargo test
+          cd ../router && cargo test
+
+  sdk:
+    name: Build & Test SDK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: sdk/package-lock.json
+
+      - name: Install SDK dependencies
+        run: cd sdk && npm ci
+
+      - name: Lint SDK
+        run: cd sdk && npm run lint
+
+      - name: Build SDK
+        run: cd sdk && npm run build
+
+      - name: Test SDK
+        run: cd sdk && npm test
+
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rust security audit
+        uses: actions-rs/audit-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

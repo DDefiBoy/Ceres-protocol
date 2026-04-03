@@ -1,0 +1,35 @@
+# Rust / Soroban
+target/
+**/*.rs.bk
+Cargo.lock
+*.wasm
+
+# Node / SDK
+node_modules/
+dist/
+build/
+.npm
+*.tgz
+.env
+.env.local
+.env.*.local
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Test artifacts
+coverage/
+*.lcov
+
+# Deployment
+deployments/*.json
+!deployments/testnet.example.json
+
+# Keys — NEVER commit these
+*.secret
+keypair.json
+admin_key.json
