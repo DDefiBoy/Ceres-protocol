@@ -145,13 +145,6 @@ const tx = await ceres.pools.buildAddLiquidityTransaction({
 └─────────────────────────────────────────────┘
 ```
 
----
-
-## Flagship Consumer
-
-[StellarTrade](https://github.com/DDefiboy/stellartrade-app) — retail RWA trading platform built on Ceres.
-
----
 
 ## Contributing
 
@@ -180,12 +173,5 @@ MIT License. See [LICENSE](./LICENSE).
 
 ---
 
-## Team
 
-Built by the Ceres team — a small group of Soroban developers and DeFi builders focused on Stellar's financial ecosystem.
-
-- GitHub: [@DDefiboy](https://github.com/DDefiboy)
-
----
-
-*Ceres — open liquidity infrastructure for Stellar.*
+*Ceres — open liquidity infrastructure for Stellar...*
