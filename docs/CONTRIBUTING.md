@@ -56,14 +56,6 @@ npm test
 - Every public method must have JSDoc comments
 - Tests use Jest
 
----
-
-## Security
-
-Do not open public issues for security vulnerabilities. Email security@ceres-protocol.xyz directly.
-
----
-
 ## License
 
 By contributing, you agree your contributions are licensed under the MIT License.
